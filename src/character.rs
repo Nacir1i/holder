@@ -1,4 +1,5 @@
 use bevy::prelude::*;
+use leafwing_input_manager::{prelude::*, user_input::InputKind};
 
 use crate::assets_loader::SceneAssets;
 use crate::movement::{Acceleration, MovingObjectBundle, Velocity};
@@ -6,6 +7,33 @@ use crate::movement::{Acceleration, MovingObjectBundle, Velocity};
 const STARTING_TRANSLATION: Vec3 = Vec3::new(0.0, 0.0, 0.0);
 const SPEED: f32 = 5.0;
 const ROTATION_SPEED: f32 = 2.5;
+
+#[derive(Actionlike, PartialEq, Eq, Clone, Copy, Hash, Debug, Reflect)]
+pub enum PlayerAction {
+    Run,
+    Jump,
+    UseItem,
+}
+
+impl PlayerAction {
+    fn default_keyboard_mouse_input(action: PlayerAction) -> UserInput {
+        match action {
+            Self::Run => UserInput::VirtualDPad(VirtualDPad::wasd()),
+            Self::Jump => UserInput::Single(InputKind::Keyboard(KeyCode::Space)),
+            Self::UseItem => UserInput::Single(InputKind::Mouse(MouseButton::Left)),
+        }
+    }
+
+    fn default_gamepad_input(action: PlayerAction) -> UserInput {
+        match action {
+            Self::Run => UserInput::Single(InputKind::DualAxis(DualAxis::left_stick())),
+            Self::Jump => UserInput::Single(InputKind::GamepadButton(GamepadButtonType::South)),
+            Self::UseItem => {
+                UserInput::Single(InputKind::GamepadButton(GamepadButtonType::RightTrigger2))
+            }
+        }
+    }
+}
 
 pub struct CharacterPlugin;
 
@@ -20,6 +48,13 @@ impl Plugin for CharacterPlugin {
 pub struct Character;
 
 fn spawn_character(mut commands: Commands, scene_assets: Res<SceneAssets>) {
+    let mut input_map = InputMap::default();
+
+    for action in PlayerAction::variants() {
+        input_map.insert(PlayerAction::default_keyboard_mouse_input(action), action);
+        input_map.insert(PlayerAction::default_gamepad_input(action), action);
+    }
+
     commands.spawn((
         MovingObjectBundle {
             velocity: Velocity::new(Vec3::ZERO),
@@ -30,19 +65,34 @@ fn spawn_character(mut commands: Commands, scene_assets: Res<SceneAssets>) {
                 ..default()
             },
         },
+        InputManagerBundle::<PlayerAction> {
+            input_map,
+            ..default()
+        },
         Character,
     ));
 }
 
 fn character_movement_controls(
-    mut query: Query<(&mut Transform, &mut Velocity), With<Character>>,
+    mut query: Query<
+        (
+            &mut Transform,
+            &mut Velocity,
+            &mut ActionState<PlayerAction>,
+        ),
+        With<Character>,
+    >,
     keyboard_input: Res<Input<KeyCode>>,
     time: Res<Time>,
 ) {
-    let (mut transform, mut velocity) = query.single_mut();
+    let (mut transform, mut velocity, input) = query.single_mut();
 
     let mut rotation = 0.0;
     let mut movement = 0.0;
+
+    if input.pressed(PlayerAction::Run) {
+        println!("Running");
+    }
 
     if keyboard_input.pressed(KeyCode::W) {
         movement = SPEED;
