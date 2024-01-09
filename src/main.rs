@@ -12,6 +12,7 @@ use bevy::{
 };
 use camera::CameraPlugin;
 use character::CharacterPlugin;
+use leafwing_input_manager::prelude::*;
 use movement::MovementPlugin;
 use plane::PlanePlugin;
 
@@ -23,6 +24,7 @@ fn main() {
             brightness: 0.75,
         })
         .add_plugins(DefaultPlugins)
+        .add_plugins(InputManagerPlugin::<character::PlayerAction>::default())
         .add_plugins(AssetsLoaderPlugin)
         .add_plugins(MovementPlugin)
         .add_plugins(PlanePlugin)
@@ -72,8 +74,7 @@ fn gamepad_connections(
                     }
                 }
             }
-            GamepadEvent::Button(_) => todo!(),
-            GamepadEvent::Axis(_) => todo!(),
+            _ => {}
         }
     }
 }
