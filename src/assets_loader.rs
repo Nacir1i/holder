@@ -16,6 +16,6 @@ impl Plugin for AssetsLoaderPlugin {
 
 fn load_assets(mut scene_assets: ResMut<SceneAssets>, assets_server: Res<AssetServer>) {
     *scene_assets = SceneAssets {
-        character: assets_server.load("Guy.glb#Scene0"),
+        character: assets_server.load("untitled.glb#Scene0"),
     }
 }
