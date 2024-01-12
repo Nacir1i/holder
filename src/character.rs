@@ -1,11 +1,18 @@
 use bevy::prelude::*;
 use bevy_rapier3d::prelude::*;
+use bevy_third_person_camera::ThirdPersonCameraTarget;
 use leafwing_input_manager::{prelude::*, user_input::InputKind};
 
 use crate::assets_loader::SceneAssets;
 use crate::plane::Gravity;
 
-const STARTING_TRANSLATION: Vec3 = Vec3::new(0.0, 2.0, 0.0);
+const SCALE: Vec3 = Vec3::new(0.5, 0.5, 0.5);
+const STARTING_POSITION: Vec3 = Vec3::new(0.0, 2.0, 0.0);
+const STARTING_TRANSLATION: Transform = Transform {
+    translation: STARTING_POSITION,
+    scale: SCALE,
+    rotation: Quat::IDENTITY,
+};
 
 #[derive(Actionlike, PartialEq, Eq, Clone, Copy, Hash, Debug, Reflect)]
 pub enum PlayerAction {
@@ -47,6 +54,7 @@ impl Plugin for CharacterPlugin {
 pub struct Character;
 
 fn spawn_character(mut commands: Commands, scene_assets: Res<SceneAssets>) {
+    let init_transform = TransformBundle::from_transform(STARTING_TRANSLATION);
     let mut input_map = InputMap::default();
 
     for action in PlayerAction::variants() {
@@ -57,17 +65,19 @@ fn spawn_character(mut commands: Commands, scene_assets: Res<SceneAssets>) {
     commands.spawn((
         SceneBundle {
             scene: scene_assets.character.clone(),
-            transform: Transform::from_translation(STARTING_TRANSLATION),
+            transform: init_transform.local,
+            global_transform: init_transform.global,
             ..default()
         },
         RigidBody::KinematicPositionBased,
         KinematicCharacterController::default(),
-        Collider::ball(0.5),
+        Collider::cylinder(1., 0.2),
         Restitution::coefficient(0.7),
         InputManagerBundle::<PlayerAction> {
             input_map,
             ..default()
         },
+        ThirdPersonCameraTarget,
         Character,
         Gravity,
     ));
