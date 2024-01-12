@@ -2,7 +2,6 @@ mod assets_loader;
 mod camera;
 mod character;
 mod debug;
-mod movement;
 mod plane;
 
 use assets_loader::AssetsLoaderPlugin;
@@ -10,10 +9,10 @@ use bevy::{
     input::gamepad::{GamepadConnection, GamepadEvent},
     prelude::*,
 };
+use bevy_rapier3d::prelude::*;
 use camera::CameraPlugin;
 use character::CharacterPlugin;
 use leafwing_input_manager::prelude::*;
-use movement::MovementPlugin;
 use plane::PlanePlugin;
 
 fn main() {
@@ -24,9 +23,10 @@ fn main() {
             brightness: 0.75,
         })
         .add_plugins(DefaultPlugins)
+        .add_plugins(RapierPhysicsPlugin::<NoUserData>::default())
+        .add_plugins(RapierDebugRenderPlugin::default())
         .add_plugins(InputManagerPlugin::<character::PlayerAction>::default())
         .add_plugins(AssetsLoaderPlugin)
-        .add_plugins(MovementPlugin)
         .add_plugins(PlanePlugin)
         .add_plugins(CharacterPlugin)
         .add_plugins(CameraPlugin)
