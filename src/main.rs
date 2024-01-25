@@ -10,6 +10,7 @@ use bevy::{
     prelude::*,
 };
 use bevy_rapier3d::prelude::*;
+use bevy_third_person_camera::ThirdPersonCameraPlugin;
 use camera::CameraPlugin;
 use character::CharacterPlugin;
 use leafwing_input_manager::prelude::*;
@@ -29,6 +30,7 @@ fn main() {
         .add_plugins(AssetsLoaderPlugin)
         .add_plugins(PlanePlugin)
         .add_plugins(CharacterPlugin)
+        .add_plugins(ThirdPersonCameraPlugin)
         .add_plugins(CameraPlugin)
         .add_plugins(GamepadPlugin)
         .run()
