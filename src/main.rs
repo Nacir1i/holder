@@ -9,6 +9,7 @@ use bevy::{
     input::gamepad::{GamepadConnection, GamepadEvent},
     prelude::*,
 };
+use bevy_editor_pls::prelude::*;
 use bevy_rapier3d::prelude::*;
 use bevy_third_person_camera::ThirdPersonCameraPlugin;
 use camera::CameraPlugin;
@@ -23,6 +24,7 @@ fn main() {
             color: Color::default(),
             brightness: 0.75,
         })
+        .add_plugins(EditorPlugin::default())
         .add_plugins(DefaultPlugins)
         .add_plugins(RapierPhysicsPlugin::<NoUserData>::default())
         .add_plugins(RapierDebugRenderPlugin::default())
