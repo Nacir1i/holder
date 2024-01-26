@@ -2,8 +2,7 @@ use bevy::prelude::*;
 use bevy_third_person_camera::ThirdPersonCameraTarget;
 use leafwing_input_manager::{prelude::*, user_input::InputKind};
 
-use crate::assets_loader::SceneAssets;
-use crate::plane::Gravity;
+use crate::{AppState, GameAssets};
 
 const SCALE: Vec3 = Vec3::new(0.5, 0.5, 0.5);
 const STARTING_POSITION: Vec3 = Vec3::new(0.0, 2.0, 0.0);
@@ -44,15 +43,18 @@ pub struct CharacterPlugin;
 
 impl Plugin for CharacterPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(PostStartup, spawn_character);
-        app.add_systems(Update, character_movement_controls);
+        app.add_systems(OnEnter(AppState::Main), spawn_character)
+            .add_systems(
+                Update,
+                character_movement_controls.run_if(in_state(AppState::Main)),
+            );
     }
 }
 
 #[derive(Component)]
 pub struct Character;
 
-fn spawn_character(mut commands: Commands, scene_assets: Res<SceneAssets>) {
+fn spawn_character(mut commands: Commands, scene_assets: Res<GameAssets>) {
     let init_transform = TransformBundle::from_transform(STARTING_TRANSLATION);
     let mut input_map = InputMap::default();
 
@@ -74,7 +76,6 @@ fn spawn_character(mut commands: Commands, scene_assets: Res<SceneAssets>) {
         },
         ThirdPersonCameraTarget,
         Character,
-        Gravity,
     ));
 }
 
