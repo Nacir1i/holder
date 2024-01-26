@@ -47,7 +47,7 @@ fn main() {
         //User defined plugins
         .add_plugins(light::LightPlugin)
         .add_plugins(ground::GroundPlugin)
-        .add_plugins(character::CharacterPlugin)
+        .add_plugins(character::CharacterControllerPlugin)
         .add_plugins(ThirdPersonCameraPlugin)
         .add_plugins(camera::CameraPlugin)
         .run()
