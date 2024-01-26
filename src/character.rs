@@ -1,5 +1,4 @@
 use bevy::prelude::*;
-use bevy_rapier3d::prelude::*;
 use bevy_third_person_camera::ThirdPersonCameraTarget;
 use leafwing_input_manager::{prelude::*, user_input::InputKind};
 
@@ -69,10 +68,6 @@ fn spawn_character(mut commands: Commands, scene_assets: Res<SceneAssets>) {
             global_transform: init_transform.global,
             ..default()
         },
-        RigidBody::KinematicPositionBased,
-        KinematicCharacterController::default(),
-        Collider::cylinder(1., 0.2),
-        Restitution::coefficient(0.7),
         InputManagerBundle::<PlayerAction> {
             input_map,
             ..default()

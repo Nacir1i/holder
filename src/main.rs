@@ -7,7 +7,6 @@ mod ui;
 
 use bevy::{diagnostic::FrameTimeDiagnosticsPlugin, prelude::*};
 use bevy_editor_pls::prelude::*;
-use bevy_rapier3d::prelude::*;
 use bevy_third_person_camera::ThirdPersonCameraPlugin;
 use leafwing_input_manager::prelude::*;
 
@@ -27,8 +26,6 @@ fn main() {
         .add_plugins(ui::fps_counter::FpsCounterPlugin)
         .add_plugins(EditorPlugin::default())
         .add_plugins(DefaultPlugins)
-        .add_plugins(RapierPhysicsPlugin::<NoUserData>::default())
-        .add_plugins(RapierDebugRenderPlugin::default())
         .add_plugins(InputManagerPlugin::<character::PlayerAction>::default())
         .add_plugins(AssetsLoaderPlugin)
         .add_plugins(PlanePlugin)
