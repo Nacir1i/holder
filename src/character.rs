@@ -2,7 +2,7 @@ use bevy::prelude::*;
 use bevy_third_person_camera::ThirdPersonCameraTarget;
 use leafwing_input_manager::{prelude::*, user_input::InputKind};
 
-use crate::{plane::Gravity, AppState, GameAssets};
+use crate::{AppState, GameAssets};
 
 const SCALE: Vec3 = Vec3::new(0.5, 0.5, 0.5);
 const STARTING_POSITION: Vec3 = Vec3::new(0.0, 2.0, 0.0);
@@ -76,7 +76,6 @@ fn spawn_character(mut commands: Commands, scene_assets: Res<GameAssets>) {
         },
         ThirdPersonCameraTarget,
         Character,
-        Gravity,
     ));
 }
 

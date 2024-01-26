@@ -1,8 +1,8 @@
 mod camera;
 mod character;
 mod debug;
+mod ground;
 mod light;
-mod plane;
 mod ui;
 
 use bevy::{diagnostic::FrameTimeDiagnosticsPlugin, prelude::*};
@@ -46,7 +46,7 @@ fn main() {
         .add_plugins(InputManagerPlugin::<character::PlayerAction>::default())
         //User defined plugins
         .add_plugins(light::LightPlugin)
-        .add_plugins(plane::PlanePlugin)
+        .add_plugins(ground::GroundPlugin)
         .add_plugins(character::CharacterPlugin)
         .add_plugins(ThirdPersonCameraPlugin)
         .add_plugins(camera::CameraPlugin)
