@@ -3,6 +3,7 @@ mod camera;
 mod character;
 mod debug;
 mod plane;
+mod ui;
 
 use assets_loader::AssetsLoaderPlugin;
 use bevy::{
