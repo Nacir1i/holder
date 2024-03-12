@@ -2,7 +2,10 @@ use bevy::{ecs::query::Has, prelude::*};
 use bevy_xpbd_3d::{math::*, prelude::*, SubstepSchedule, SubstepSet};
 use leafwing_input_manager::{prelude::*, user_input::InputKind};
 
-use crate::{AppState, GameAssets};
+use crate::{
+    camera::{MainCamera, MainCameraTarget},
+    AppState, GameAssets,
+};
 
 const STARTING_TRANSLATION: Vec3 = Vec3::new(0.0, 10.0, 0.0);
 
@@ -187,12 +190,14 @@ fn spawn_character(mut commands: Commands, scene_assets: Res<GameAssets>) {
             ..default()
         },
         DebugRender::default().with_collider_color(Color::RED),
+        MainCameraTarget,
     ));
 }
 
 fn player_actions(
     time: Res<Time>,
     action_q: Query<&ActionState<PlayerAction>, With<CharacterController>>,
+    camera_q: Query<(&Transform, &MainCamera), Without<MovementAcceleration>>,
     mut controllers: Query<(
         &MovementAcceleration,
         &JumpImpulse,
@@ -202,6 +207,7 @@ fn player_actions(
     )>,
 ) {
     let action_state = action_q.single();
+    let (camera_transform, _) = camera_q.single();
 
     for (movement_acceleration, jump_impulse, mut linear_velocity, mut transform, is_grounded) in
         &mut controllers
@@ -212,6 +218,12 @@ fn player_actions(
                 .unwrap()
                 .xy();
 
+            let camera_rotation = camera_transform.rotation;
+            let forward = camera_rotation.mul_vec3(Vec3::Z).normalize();
+            let right = camera_rotation.mul_vec3(Vec3::X).normalize();
+
+            let movement_direction = forward * direction.y + right * direction.x;
+
             let rotation_angle = if direction.length() > 0.0 {
                 direction.x.atan2(direction.y)
             } else {
@@ -220,15 +232,8 @@ fn player_actions(
 
             transform.rotation = Quat::from_rotation_y(-rotation_angle as f32);
 
-            if is_grounded {
-                linear_velocity.x += direction.x * movement_acceleration.0 * time.delta_seconds();
-                linear_velocity.z -= direction.y * movement_acceleration.0 * time.delta_seconds();
-            } else {
-                linear_velocity.x +=
-                    direction.x * (movement_acceleration.0 * 0.5) * time.delta_seconds();
-                linear_velocity.z -=
-                    direction.y * (movement_acceleration.0 * 0.5) * time.delta_seconds();
-            }
+            linear_velocity.x += direction.x * movement_acceleration.0 * time.delta_seconds();
+            linear_velocity.z -= direction.y * movement_acceleration.0 * time.delta_seconds();
         }
 
         if action_state.just_pressed(PlayerAction::Jump) {

@@ -31,7 +31,14 @@ pub struct GameAssets {
 fn main() {
     App::new()
         .insert_resource(ClearColor(Color::rgb(0.1, 0.0, 0.15)))
-        .add_plugins(DefaultPlugins)
+        .add_plugins(DefaultPlugins.set(WindowPlugin {
+            primary_window: Some(Window {
+                // mode: bevy::window::WindowMode::Fullscreen,
+                title: "Holder".into(),
+                ..default()
+            }),
+            ..default()
+        }))
         .add_state::<AppState>()
         .add_loading_state(
             LoadingState::new(AppState::Loading)
@@ -44,6 +51,7 @@ fn main() {
         .add_plugins(PhysicsPlugins::default())
         .add_plugins(PhysicsDebugPlugin::default())
         .add_plugins(InputManagerPlugin::<character::PlayerAction>::default())
+        .add_plugins(InputManagerPlugin::<camera::CameraAction>::default())
         //User defined plugins
         .add_plugins(light::LightPlugin)
         .add_plugins(ground::GroundPlugin)
